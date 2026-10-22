@@ -19,6 +19,12 @@ make data
 
 `make data` downloads the 122 MB official XLSX only if absent, verifies its SHA-256, and writes the committed CSV and selection record. To supply an already downloaded copy, run `python -m pdxmodel.data --source /path/to/original.xlsx` after installation.
 
+## Stage 2: model and fit
+
+Run `make fit` after `make data`. The pipeline selects growth form on untreated curves, jointly fits the four treatment arms with a two-population ODE, refits a Bliss-null model, computes 200 bootstrap fits and refitted profiles, and saves [numerical results](analysis/outputs/results.json) plus [PNG/SVG diagnostics](analysis/outputs/figures). The same JSON is copied to `web/public/data/` for the future site. Equations, units, fixed assumptions, and optimizer details are in [MODEL.md](analysis/MODEL.md); the [notebook](analysis/notebooks/main.ipynb) is a compact inspection entry point.
+
+**Current result:** logistic growth beats Gompertz on controls (AICc −102.30 versus −67.89). The free fit estimates `ψ=1.81`, but the 200-replicate bootstrap interval and the refitted profile both cover the entire prespecified range `[-1, 2]`. The Bliss-null comparison gives likelihood-ratio `p=0.63`; AIC and BIC prefer the simpler null. Thus the **interaction sign is not identified** in this cohort. The log-volume RMSE is 0.52 and 8 of 10 fitted carrying capacities touch a bound, so the mechanistic fit has substantial misspecification/identifiability limitations. This is not evidence of additivity or a biological absence of synergy.
+
 ## Source
 
 Gao H, Korn JM, Ferretti S, et al. *High-throughput screening using patient-derived tumor xenografts to predict clinical trial drug response.* Nature Medicine 21, 1318–1325 (2015). [doi:10.1038/nm.3954](https://doi.org/10.1038/nm.3954). [Official supplementary table 1](https://static-content.springer.com/esm/art%3A10.1038%2Fnm.3954/MediaObjects/41591_2015_BFnm3954_MOESM10_ESM.xlsx). Its 122 MB raw XLSX file is excluded from Git. The paper reports the 1×1×1 screening design; the workbook supplies individual absolute tumor volumes.

@@ -7,7 +7,12 @@ name = "pdxmodel"
 version = "0.1.0"
 description = "Mechanistic analysis of Gao et al. PDX combination therapies"
 requires-python = ">=3.11"
-dependencies = ["pandas==3.0.1", "openpyxl==3.1.5"]
+dependencies = [
+  "pandas==3.0.1",
+  "openpyxl==3.1.5",
+  "scipy==1.18.1",
+  "matplotlib==3.11.2",
+]
 
 [project.optional-dependencies]
 dev = ["pytest>=8,<9", "ruff>=0.14,<0.15"]
