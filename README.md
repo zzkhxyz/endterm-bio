@@ -2,6 +2,8 @@
 
 A mechanistic ODE analysis of combination therapy in patient-derived xenografts, using the Gao et al. PDX screening data. The repository includes the complete analysis, report, and interactive site.
 
+**Live site:** [endterm-bio.vercel.app](https://endterm-bio.vercel.app) · **Report:** [report.pdf](report/report.pdf)
+
 ## Reproduce and submit
 
 With Python 3.11+, Node.js 24+, npm, GNU Make, and internet access, run `make all` at the repository root. This installs the pinned Python and Node dependencies, verifies or downloads the official source XLSX, regenerates the processed data and fitted results, compiles the PDF with a pinned Tectonic release, refreshes site assets, builds the static site, and creates ignored `submission.zip`. The first run downloads about 122 MB of source data and TeX support files and takes substantially longer than later runs. On Windows, use GNU Make from Git Bash or an equivalent installation.
@@ -40,6 +42,8 @@ The [seven-page report](report/report.pdf) covers Parts A–F, equations, parame
 The [Next.js App Router site](web/) exports to static HTML and uses the same [results JSON](web/public/data/results.json) as the report. It has a PDX selector, treatment-group chart, measured-versus-fitted comparison, residuals, a browser RK4 simulator, profile likelihood, local sensitivity, and a full parameter-correlation heatmap. The hero is statically rendered; data-heavy charts load when the reader scrolls or follows a section link. This keeps the initial page fast while preserving all interactive analysis. It supports light and dark themes and mobile layouts. The seven-page PDF is copied to `web/public/report.pdf` by `make web-data`.
 
 Vercel project `zzkhxyz/endterm-bio` is connected to this GitHub repository with Root Directory `web` and the Next.js framework preset. The production branch is `main`; Git integration supplies preview builds for pull requests.
+
+The local static export scored **96 Performance** and **100 Accessibility** in Lighthouse's mobile audit. The production site and PDF were checked in a browser with no console errors; a production Lighthouse run was inconclusive in this environment because headless Chrome displayed a network interstitial.
 
 ## Source
 
