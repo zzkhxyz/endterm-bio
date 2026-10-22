@@ -1,6 +1,12 @@
 # Synergy or simple addition?
 
-A mechanistic ODE analysis of combination therapy in patient-derived xenografts, using the Gao et al. PDX screening data. Data, fitting code, uncertainty analyses, and the report are available; the interactive site is the final stage.
+A mechanistic ODE analysis of combination therapy in patient-derived xenografts, using the Gao et al. PDX screening data. The repository includes the complete analysis, report, and interactive site.
+
+## Reproduce and submit
+
+With Python 3.11+, Node.js 24+, npm, GNU Make, and internet access, run `make all` at the repository root. This installs the pinned Python and Node dependencies, verifies or downloads the official source XLSX, regenerates the processed data and fitted results, compiles the PDF with a pinned Tectonic release, refreshes site assets, builds the static site, and creates ignored `submission.zip`. The first run downloads about 122 MB of source data and TeX support files and takes substantially longer than later runs. On Windows, use GNU Make from Git Bash or an equivalent installation.
+
+Individual commands: `make data`, `make fit`, `make report`, `make web-data`, `make web-build`, and `make zip`. The ZIP contains `report/report.pdf`, `README.md`, and the `analysis/` code, notebook, processed CSV, figures, and results. Raw XLSX and the ZIP are excluded from Git.
 
 ## Stage 1: data
 
@@ -29,6 +35,10 @@ Run `make fit` after `make data`. The pipeline selects growth form on untreated 
 
 The [seven-page report](report/report.pdf) covers Parts A–F, equations, parameters, figures, limitations, and references. Its editable [LaTeX source](report/report.tex) compiles with [Tectonic](https://tectonic-typesetting.github.io/) using `make report` after `make fit`. The report's numeric results come from the committed `results.json`; it states the 0.6 dose-exposure assumption and the equal-dose refit separately. The raw source has four selected PI3K/HER2-pathway alteration records; missing records are not treated as wild type.
 
+## Stage 4: interactive site
+
+The [Next.js App Router site](web/) exports to static HTML and uses the same [results JSON](web/public/data/results.json) as the report. It has a PDX selector, treatment-group chart, measured-versus-fitted comparison, residuals, a browser RK4 simulator, profile likelihood, local sensitivity, and a full parameter-correlation heatmap. The hero is statically rendered; data-heavy charts load when the reader scrolls or follows a section link. This keeps the initial page fast while preserving all interactive analysis. It supports light and dark themes and mobile layouts. The seven-page PDF is copied to `web/public/report.pdf` by `make web-data`.
+
 ## Source
 
 Gao H, Korn JM, Ferretti S, et al. *High-throughput screening using patient-derived tumor xenografts to predict clinical trial drug response.* Nature Medicine 21, 1318–1325 (2015). [doi:10.1038/nm.3954](https://doi.org/10.1038/nm.3954). [Official supplementary table 1](https://static-content.springer.com/esm/art%3A10.1038%2Fnm.3954/MediaObjects/41591_2015_BFnm3954_MOESM10_ESM.xlsx). Its 122 MB raw XLSX file is excluded from Git. The paper reports the 1×1×1 screening design; the workbook supplies individual absolute tumor volumes.
@@ -43,3 +53,5 @@ Gao H, Korn JM, Ferretti S, et al. *High-throughput screening using patient-deri
 - We scale BYL719 Emax exposure by 0.6 in the combination, based on reported 50 versus 30 mg/kg dosing. This is an assumed dose-to-concentration relation; an equal-dose refit shows that the synergy conclusion is sensitive to it.
 - The 0.15 log-volume scale is a caliper-error weighting proxy, not an estimated PDX cohort variance. The bootstrap preserves whole-trajectory residual patterns but cannot supply missing biological replicates.
 - Selected pathway annotations are extracted from the official mutation/copy-number worksheet solely for context; their sparsity precludes a genotype-response test.
+- Website colors use the treatment-color map exported with `results.json`. The site avoids a definitive synergy headline because the equal-dose refit and bootstrap do not support one.
+- The report PDF is committed under `report/` and copied into the site's public folder for a direct download. The `submission.zip` archive remains untracked.
