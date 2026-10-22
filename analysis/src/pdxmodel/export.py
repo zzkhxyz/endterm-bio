@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+from dataclasses import replace
 
 import numpy as np
 import pandas as pd
@@ -12,7 +13,7 @@ import pandas as pd
 from pdxmodel.config import CONFIG
 from pdxmodel.data import ANALYSIS_ROOT, CSV_PATH
 from pdxmodel.fit import run_fit
-from pdxmodel.model import Cohort, bliss_effect, parameter_names
+from pdxmodel.model import Cohort, bliss_effect, combo_a_effect, parameter_names
 from pdxmodel.plots import (
     COLORS,
     plot_correlation,
@@ -40,10 +41,15 @@ def add_summary(result: dict[str, object]) -> None:
     e_a = float(parameters["e_A"])
     e_b = float(parameters["e_B"])
     psi = float(parameters["psi"])
+    pair_a = combo_a_effect(e_a)
     psi_ci = bootstrap["ci95"]["psi"] if isinstance(bootstrap, dict) else None
     profile_ci = profiles["psi"]["ci95"] if isinstance(profiles, dict) else None
     p_value = float(metrics["lrt_p_value"])
-    if psi_ci is None or profile_ci is None or p_value >= 0.05 or (psi_ci[0] <= 0 <= psi_ci[1]):
+    scenario = result.get("dose_assumption_sensitivity")
+    unstable_dose = isinstance(scenario, dict) and scenario["equal_dose_lrt_p_value"] >= 0.05
+    if unstable_dose:
+        conclusion = "Dose-sensitive apparent synergy; interaction not robustly identified"
+    elif psi_ci is None or profile_ci is None or p_value >= 0.05 or (psi_ci[0] <= 0 <= psi_ci[1]):
         conclusion = "Interaction sign not identified; no evidence for synergy over Bliss"
     else:
         conclusion = "Synergy supported" if psi > 0 else "Antagonism supported"
@@ -57,12 +63,13 @@ def add_summary(result: dict[str, object]) -> None:
         "psi_profile_ci95": profile_ci,
         "lrt_p_value": p_value,
         "e_a": e_a,
+        "e_a_at_combo_dose": pair_a,
         "e_b": e_b,
-        "bliss_effect": bliss_effect(e_a, e_b, 0.0),
-        "fitted_combo_effect": bliss_effect(e_a, e_b, psi),
+        "bliss_effect": bliss_effect(pair_a, e_b, 0.0),
+        "fitted_combo_effect": bliss_effect(pair_a, e_b, psi),
         "drug_a_kill_per_day": CONFIG.kill_ceiling_per_day * e_a,
         "drug_b_kill_per_day": CONFIG.kill_ceiling_per_day * e_b,
-        "fitted_combo_kill_per_day": CONFIG.kill_ceiling_per_day * bliss_effect(e_a, e_b, psi),
+        "fitted_combo_kill_per_day": CONFIG.kill_ceiling_per_day * bliss_effect(pair_a, e_b, psi),
         "rmse_log_volume": float(np.sqrt(np.mean((weighted * CONFIG.sigma_log) ** 2))),
         "capacity_parameters_at_bound": int(
             np.count_nonzero(
@@ -74,12 +81,30 @@ def add_summary(result: dict[str, object]) -> None:
     }
 
 
+def add_dose_sensitivity(result: dict[str, object], cohort: Cohort) -> None:
+    """Refit under equal A dose to expose dependence on dose extrapolation."""
+    equal_dose_fit = run_fit(cohort, replace(CONFIG, combo_a_dose_ratio=1.0))
+    result["dose_assumption_sensitivity"] = {
+        "description": "Alternative equal A dose assumption; all parameters refitted",
+        "equal_dose_ratio": 1.0,
+        "equal_dose_psi_point": float(equal_dose_fit.parameters[-1]),
+        "equal_dose_lrt_p_value": equal_dose_fit.metrics["lrt_p_value"],
+        "equal_dose_delta_aic_bliss_minus_full": equal_dose_fit.metrics[
+            "delta_aic_bliss_minus_full"
+        ],
+        "equal_dose_delta_bic_bliss_minus_full": equal_dose_fit.metrics[
+            "delta_bic_bliss_minus_full"
+        ],
+    }
+
+
 def main() -> None:
     """Run the data-backed ODE analysis."""
     parser = argparse.ArgumentParser(description=__doc__)
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--fit-only", action="store_true", help="Skip slow uncertainty diagnostics")
     mode.add_argument("--profiles-only", action="store_true", help="Recompute profiles, reuse saved bootstrap")
+    mode.add_argument("--dose-only", action="store_true", help="Recompute dose scenario, reuse saved diagnostics")
     args = parser.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
     cohort = Cohort.from_frame(pd.read_csv(CSV_PATH))
@@ -90,6 +115,15 @@ def main() -> None:
         add_summary(result)
         plot_profiles(result["profile_likelihood"], FIGURE_DIR)
         plot_fit(fit, cohort, FIGURE_DIR)
+        payload = json.dumps(result, indent=2) + "\n"
+        for path in (RESULT_PATH, WEB_DATA_PATH):
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(payload, encoding="utf-8")
+        return
+    if args.dose_only:
+        result = json.loads(RESULT_PATH.read_text(encoding="utf-8"))
+        add_dose_sensitivity(result, cohort)
+        add_summary(result)
         payload = json.dumps(result, indent=2) + "\n"
         for path in (RESULT_PATH, WEB_DATA_PATH):
             path.parent.mkdir(parents=True, exist_ok=True)
@@ -129,11 +163,13 @@ def main() -> None:
             "mutation_per_day": CONFIG.mutation_per_day,
             "initial_resistant_fraction": CONFIG.initial_resistant_fraction,
             "resistant_kill_fraction": CONFIG.resistant_kill_fraction,
+            "combo_a_dose_ratio": CONFIG.combo_a_dose_ratio,
         },
     }
     if not args.fit_only:
         result["bootstrap_uncertainty"] = block_wild_bootstrap(fit, cohort, CONFIG)
         result["profile_likelihood"] = profile_likelihood(fit, cohort, CONFIG)
+        add_dose_sensitivity(result, cohort)
         plot_fit(fit, cohort, FIGURE_DIR)
         plot_residuals(fit, cohort, FIGURE_DIR)
         plot_correlation(covariance["correlation_matrix"], cohort, FIGURE_DIR)

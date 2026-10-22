@@ -105,9 +105,19 @@ def bliss_effect(e_a: float, e_b: float, psi: float) -> float:
     return e_a + e_b - e_a * e_b + psi * e_a * e_b
 
 
-def treatment_effects(e_a: float, e_b: float, psi: float) -> FloatArray:
+def combo_a_effect(e_a: float, config: ModelConfig = CONFIG) -> float:
+    """Scale A's Emax concentration ratio for its lower combination dose."""
+    concentration_ratio = e_a / (1.0 - e_a)
+    scaled = config.combo_a_dose_ratio * concentration_ratio
+    return scaled / (1.0 + scaled)
+
+
+def treatment_effects(
+    e_a: float, e_b: float, psi: float, config: ModelConfig = CONFIG
+) -> FloatArray:
     """Effect for control, A, B, and A+B in that order."""
-    return np.asarray([0.0, e_a, e_b, bliss_effect(e_a, e_b, psi)], dtype=float)
+    pair_a = combo_a_effect(e_a, config)
+    return np.asarray([0.0, e_a, e_b, bliss_effect(pair_a, e_b, psi)], dtype=float)
 
 
 def solve_cohort(
@@ -120,7 +130,7 @@ def solve_cohort(
     n = cohort.n_lines
     r = parameters[:n][cohort.line_index]
     capacity = 1000.0 * parameters[n : 2 * n][cohort.line_index]
-    effect = treatment_effects(*parameters[-3:])[cohort.arm_index]
+    effect = treatment_effects(*parameters[-3:], config=config)[cohort.arm_index]
     kill = config.kill_ceiling_per_day * effect
     resistant_kill = config.resistant_kill_fraction * kill
     sensitive0 = cohort.initial_volume * (1.0 - config.initial_resistant_fraction)

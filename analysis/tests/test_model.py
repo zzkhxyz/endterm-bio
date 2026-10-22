@@ -3,7 +3,7 @@
 import numpy as np
 import pandas as pd
 
-from pdxmodel.model import Cohort, bliss_effect, solve_cohort
+from pdxmodel.model import Cohort, bliss_effect, combo_a_effect, solve_cohort, treatment_effects
 
 
 def fixture_cohort() -> Cohort:
@@ -30,3 +30,5 @@ def test_solutions_are_positive_and_zero_dose_matches_control() -> None:
 def test_zero_interaction_is_bliss_independence() -> None:
     """At ψ=0 the pair effect equals the stated Bliss expression."""
     assert bliss_effect(0.2, 0.4, 0.0) == 0.2 + 0.4 - 0.2 * 0.4
+    assert combo_a_effect(0.2) < 0.2
+    assert treatment_effects(0.2, 0.4, 0.0)[-1] == bliss_effect(combo_a_effect(0.2), 0.4, 0.0)
