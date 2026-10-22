@@ -19,6 +19,12 @@ make data
 
 `make data` downloads the 122 MB official XLSX only if absent, verifies its SHA-256, and writes the committed CSV and selection record. To supply an already downloaded copy, run `python -m pdxmodel.data --source /path/to/original.xlsx` after installation.
 
+## Stage 2: model and fit
+
+Run `make fit` after `make data`. The pipeline selects growth form on untreated curves, jointly fits the four treatment arms with a two-population ODE, refits a Bliss-null model, computes 200 bootstrap fits and refitted profiles, and saves [numerical results](analysis/outputs/results.json) plus [PNG/SVG diagnostics](analysis/outputs/figures). The same JSON is copied to `web/public/data/` for the future site. Equations, units, fixed assumptions, and optimizer details are in [MODEL.md](analysis/MODEL.md); the [notebook](analysis/notebooks/main.ipynb) is a compact inspection entry point.
+
+**Current result:** logistic growth beats Gompertz on controls (AICc −102.30 versus −67.89). A published reanalysis reports a lower BYL719 dose in the combination than alone; under a dose-proportional Emax scaling assumption, the conditional free fit estimates `ψ=26.73` and outperforms Bliss (likelihood-ratio `p=2.4×10⁻⁶`). Yet the 200-replicate trajectory-block bootstrap interval spans the full `[-1, 50]` search range, and the fit has log-volume RMSE 0.52 with 8 of 10 carrying capacities at a bound. Under an equal-dose counterfactual, refitting gives `ψ=1.81`, `p=0.63`, and AIC/BIC favor Bliss. Thus **apparent synergy depends on dose scaling and is not robustly identified**. The divergent profile/bootstrap intervals and structured residuals must be considered when interpreting this model.
+
 ## Source
 
 Gao H, Korn JM, Ferretti S, et al. *High-throughput screening using patient-derived tumor xenografts to predict clinical trial drug response.* Nature Medicine 21, 1318–1325 (2015). [doi:10.1038/nm.3954](https://doi.org/10.1038/nm.3954). [Official supplementary table 1](https://static-content.springer.com/esm/art%3A10.1038%2Fnm.3954/MediaObjects/41591_2015_BFnm3954_MOESM10_ESM.xlsx). Its 122 MB raw XLSX file is excluded from Git. The paper reports the 1×1×1 screening design; the workbook supplies individual absolute tumor volumes.
