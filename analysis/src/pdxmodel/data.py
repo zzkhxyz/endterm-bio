@@ -23,6 +23,7 @@ SOURCE_SHA256 = "c4b9a6903a4d1f76e3ddca4199039776d56bb99970aa5b7abe4f3abd732a0c6
 RAW_PATH = ANALYSIS_ROOT / "data/raw/gao_2015_supplementary_table_1.xlsx"
 CSV_PATH = ANALYSIS_ROOT / "data/processed/pdx_combo.csv"
 SELECTION_PATH = ANALYSIS_ROOT / "data/processed/selection.json"
+BIOMARKER_PATH = ANALYSIS_ROOT / "data/processed/selected_biomarkers.csv"
 SOURCE_COLUMNS = {
     "Model": "pdx_id",
     "Tumor Type": "cancer_type",
@@ -198,6 +199,21 @@ def prepare_data(data: pd.DataFrame) -> tuple[pd.DataFrame, dict[str, object]]:
     return selected, metadata
 
 
+def extract_selected_biomarkers(path: Path, pdx_ids: list[str]) -> pd.DataFrame:
+    """Extract selected pathway alterations; missing records are not wild-type calls."""
+    annotations = pd.read_excel(path, sheet_name="pdxe_mut_and_cn2", engine="openpyxl")
+    required = {"Sample", "Gene", "Category", "Details"}
+    if not required.issubset(annotations.columns):
+        raise ValueError(f"Biomarker sheet is missing {sorted(required - set(annotations.columns))}")
+    pathway_genes = {"PIK3CA", "PTEN", "AKT1", "ERBB2", "ERBB3"}
+    selected = annotations.loc[
+        annotations["Sample"].isin(pdx_ids) & annotations["Gene"].isin(pathway_genes),
+        ["Sample", "Gene", "Category", "Details"],
+    ].copy()
+    selected.columns = ["pdx_id", "gene", "category", "details"]
+    return selected.sort_values(["pdx_id", "gene", "category"]).reset_index(drop=True)
+
+
 def main() -> None:
     """Run the reproducible Part A extraction pipeline."""
     parser = argparse.ArgumentParser(description=__doc__)
@@ -211,7 +227,10 @@ def main() -> None:
     CSV_PATH.parent.mkdir(parents=True, exist_ok=True)
     selected.to_csv(CSV_PATH, index=False, float_format="%.6f")
     SELECTION_PATH.write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
+    biomarkers = extract_selected_biomarkers(path, metadata["selected_pdx_ids"])
+    biomarkers.to_csv(BIOMARKER_PATH, index=False)
     LOGGER.info("Saved %s rows from %s PDX lines to %s", len(selected), metadata["selected_lines"], CSV_PATH)
+    LOGGER.info("Saved %s selected biomarker records to %s", len(biomarkers), BIOMARKER_PATH)
 
 
 if __name__ == "__main__":

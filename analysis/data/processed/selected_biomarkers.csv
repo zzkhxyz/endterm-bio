@@ -1,0 +1,5 @@
+pdx_id,gene,category,details
+X-1008,PTEN,Del0.8,0.49
+X-3697,AKT1,Amp5,5.39
+X-3697,PIK3CA,MutKnownFunctional,"C420R,0.881"
+X-3873,ERBB2,Amp8,17.88

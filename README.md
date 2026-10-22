@@ -1,6 +1,6 @@
 # Synergy or simple addition?
 
-A mechanistic ODE analysis of combination therapy in patient-derived xenografts, using the Gao et al. PDX screening data. The project is being developed in stages; Part A (source acquisition and cohort selection) is ready for review.
+A mechanistic ODE analysis of combination therapy in patient-derived xenografts, using the Gao et al. PDX screening data. Data, fitting code, uncertainty analyses, and the report are available; the interactive site is the final stage.
 
 ## Stage 1: data
 
@@ -17,13 +17,17 @@ python -m pip install -e 'analysis[dev]'
 make data
 ```
 
-`make data` downloads the 122 MB official XLSX only if absent, verifies its SHA-256, and writes the committed CSV and selection record. To supply an already downloaded copy, run `python -m pdxmodel.data --source /path/to/original.xlsx` after installation.
+`make data` downloads the 122 MB official XLSX only if absent, verifies its SHA-256, and writes the committed CSV, selection record, and [selected pathway annotations](analysis/data/processed/selected_biomarkers.csv). To supply an already downloaded copy, run `python -m pdxmodel.data --source /path/to/original.xlsx` after installation.
 
 ## Stage 2: model and fit
 
-Run `make fit` after `make data`. The pipeline selects growth form on untreated curves, jointly fits the four treatment arms with a two-population ODE, refits a Bliss-null model, computes 200 bootstrap fits and refitted profiles, and saves [numerical results](analysis/outputs/results.json) plus [PNG/SVG diagnostics](analysis/outputs/figures). The same JSON is copied to `web/public/data/` for the future site. Equations, units, fixed assumptions, and optimizer details are in [MODEL.md](analysis/MODEL.md); the [notebook](analysis/notebooks/main.ipynb) is a compact inspection entry point.
+Run `make fit` after `make data`. The pipeline selects growth form on untreated curves, jointly fits the four treatment arms with a two-population ODE, refits a Bliss-null model, computes 200 bootstrap fits and refitted profiles, and saves [numerical results](analysis/outputs/results.json) plus [PNG/SVG diagnostics](analysis/outputs/figures). The same JSON is copied to `web/public/data/` for the site. Equations, units, fixed assumptions, and optimizer details are in [MODEL.md](analysis/MODEL.md); the [notebook](analysis/notebooks/main.ipynb) is a compact inspection entry point.
 
 **Current result:** logistic growth beats Gompertz on controls (AICc −102.30 versus −67.89). A published reanalysis reports a lower BYL719 dose in the combination than alone; under a dose-proportional Emax scaling assumption, the conditional free fit estimates `ψ=26.73` and outperforms Bliss (likelihood-ratio `p=2.4×10⁻⁶`). Yet the 200-replicate trajectory-block bootstrap interval spans the full `[-1, 50]` search range, and the fit has log-volume RMSE 0.52 with 8 of 10 carrying capacities at a bound. Under an equal-dose counterfactual, refitting gives `ψ=1.81`, `p=0.63`, and AIC/BIC favor Bliss. Thus **apparent synergy depends on dose scaling and is not robustly identified**. The divergent profile/bootstrap intervals and structured residuals must be considered when interpreting this model.
+
+## Stage 3: report
+
+The [seven-page report](report/report.pdf) covers Parts A–F, equations, parameters, figures, limitations, and references. Its editable [LaTeX source](report/report.tex) compiles with [Tectonic](https://tectonic-typesetting.github.io/) using `make report` after `make fit`. The report's numeric results come from the committed `results.json`; it states the 0.6 dose-exposure assumption and the equal-dose refit separately. The raw source has four selected PI3K/HER2-pathway alteration records; missing records are not treated as wild type.
 
 ## Source
 
@@ -36,3 +40,6 @@ Gao H, Korn JM, Ferretti S, et al. *High-throughput screening using patient-deri
 - Series with any missing day/volume or duplicate measurement day are excluded, a stricter rule than only requiring the first three points to be complete.
 - The combination is chosen by the largest number of complete quartets across the full source. BRCA is chosen because it has more quartets for that combination than GC. Within BRCA, ten lines are selected by the **minimum number of measurements across the four groups**, then the **minimum last day across groups**, then PDX ID. This rule does not inspect response magnitude.
 - The 1×1×1 design provides one trajectory per line and treatment. The variation between lines is biological heterogeneity, not a within-line replicate error estimate.
+- We scale BYL719 Emax exposure by 0.6 in the combination, based on reported 50 versus 30 mg/kg dosing. This is an assumed dose-to-concentration relation; an equal-dose refit shows that the synergy conclusion is sensitive to it.
+- The 0.15 log-volume scale is a caliper-error weighting proxy, not an estimated PDX cohort variance. The bootstrap preserves whole-trajectory residual patterns but cannot supply missing biological replicates.
+- Selected pathway annotations are extracted from the official mutation/copy-number worksheet solely for context; their sparsity precludes a genotype-response test.

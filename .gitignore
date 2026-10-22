@@ -29,3 +29,4 @@ out/
 # Downloaded source data and generated archives
 analysis/data/raw/
 *.zip
+work/
