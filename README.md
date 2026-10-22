@@ -39,6 +39,8 @@ The [seven-page report](report/report.pdf) covers Parts A–F, equations, parame
 
 The [Next.js App Router site](web/) exports to static HTML and uses the same [results JSON](web/public/data/results.json) as the report. It has a PDX selector, treatment-group chart, measured-versus-fitted comparison, residuals, a browser RK4 simulator, profile likelihood, local sensitivity, and a full parameter-correlation heatmap. The hero is statically rendered; data-heavy charts load when the reader scrolls or follows a section link. This keeps the initial page fast while preserving all interactive analysis. It supports light and dark themes and mobile layouts. The seven-page PDF is copied to `web/public/report.pdf` by `make web-data`.
 
+Vercel project `zzkhxyz/endterm-bio` is connected to this GitHub repository with Root Directory `web` and the Next.js framework preset. The production branch is `main`; Git integration supplies preview builds for pull requests.
+
 ## Source
 
 Gao H, Korn JM, Ferretti S, et al. *High-throughput screening using patient-derived tumor xenografts to predict clinical trial drug response.* Nature Medicine 21, 1318–1325 (2015). [doi:10.1038/nm.3954](https://doi.org/10.1038/nm.3954). [Official supplementary table 1](https://static-content.springer.com/esm/art%3A10.1038%2Fnm.3954/MediaObjects/41591_2015_BFnm3954_MOESM10_ESM.xlsx). Its 122 MB raw XLSX file is excluded from Git. The paper reports the 1×1×1 screening design; the workbook supplies individual absolute tumor volumes.
