@@ -1,0 +1,262 @@
+{
+  "source_url": "https://static-content.springer.com/esm/art%3A10.1038%2Fnm.3954/MediaObjects/41591_2015_BFnm3954_MOESM10_ESM.xlsx",
+  "source_doi": "10.1038/nm.3954",
+  "source_sha256": "c4b9a6903a4d1f76e3ddca4199039776d56bb99970aa5b7abe4f3abd732a0c6d",
+  "source_rows": 67445,
+  "filter": "At least six measurements, complete positive volumes, unique days, day-zero baseline",
+  "selection_rule": "Largest quartet count across all cancers; cancer with most quartets; ten lines ranked by minimum group point count, then minimum last day, then PDX ID",
+  "combination": "BYL719 + LJM716",
+  "treatment_labels": {
+    "untreated": "control",
+    "BYL719": "A",
+    "LJM716": "B",
+    "BYL719 + LJM716": "A+B"
+  },
+  "cancer_type": "BRCA",
+  "eligible_quartets_in_cancer": 29,
+  "selected_pdx_ids": [
+    "X-3450",
+    "X-1383",
+    "X-3873",
+    "X-1008",
+    "X-3468",
+    "X-5355",
+    "X-5502",
+    "X-3697",
+    "X-1468",
+    "X-4888"
+  ],
+  "selected_lines": 10,
+  "selected_mouse_trajectories": 40,
+  "selected_measurements": 838,
+  "candidate_rankings": [
+    {
+      "combination": "BYL719 + LJM716",
+      "agents": [
+        "BYL719",
+        "LJM716"
+      ],
+      "quartets": 52,
+      "by_cancer": {
+        "BRCA": 29,
+        "GC": 23
+      }
+    },
+    {
+      "combination": "LJM716 + trastuzumab",
+      "agents": [
+        "LJM716",
+        "trastuzumab"
+      ],
+      "quartets": 43,
+      "by_cancer": {
+        "BRCA": 28,
+        "GC": 15
+      }
+    },
+    {
+      "combination": "BKM120 + binimetinib",
+      "agents": [
+        "BKM120",
+        "binimetinib"
+      ],
+      "quartets": 38,
+      "by_cancer": {
+        "CRC": 1,
+        "NSCLC": 12,
+        "PDAC": 25
+      }
+    },
+    {
+      "combination": "BYL719 + binimetinib",
+      "agents": [
+        "BYL719",
+        "binimetinib"
+      ],
+      "quartets": 35,
+      "by_cancer": {
+        "CRC": 35
+      }
+    },
+    {
+      "combination": "BYL719 + encorafenib",
+      "agents": [
+        "BYL719",
+        "encorafenib"
+      ],
+      "quartets": 35,
+      "by_cancer": {
+        "CRC": 35
+      }
+    },
+    {
+      "combination": "BYL719 + cetuximab",
+      "agents": [
+        "BYL719",
+        "cetuximab"
+      ],
+      "quartets": 34,
+      "by_cancer": {
+        "CRC": 34
+      }
+    },
+    {
+      "combination": "cetuximab + encorafenib",
+      "agents": [
+        "cetuximab",
+        "encorafenib"
+      ],
+      "quartets": 32,
+      "by_cancer": {
+        "CRC": 32
+      }
+    },
+    {
+      "combination": "BYL719 + LEE011",
+      "agents": [
+        "BYL719",
+        "LEE011"
+      ],
+      "quartets": 31,
+      "by_cancer": {
+        "BRCA": 31
+      }
+    },
+    {
+      "combination": "BKM120 + LJC049",
+      "agents": [
+        "BKM120",
+        "LJC049"
+      ],
+      "quartets": 28,
+      "by_cancer": {
+        "CRC": 28
+      }
+    },
+    {
+      "combination": "LEE011 + everolimus",
+      "agents": [
+        "LEE011",
+        "everolimus"
+      ],
+      "quartets": 27,
+      "by_cancer": {
+        "GC": 27
+      }
+    },
+    {
+      "combination": "BYL719 + HSP990",
+      "agents": [
+        "BYL719",
+        "HSP990"
+      ],
+      "quartets": 26,
+      "by_cancer": {
+        "GC": 26
+      }
+    },
+    {
+      "combination": "INC424 + binimetinib",
+      "agents": [
+        "INC424",
+        "binimetinib"
+      ],
+      "quartets": 26,
+      "by_cancer": {
+        "CRC": 1,
+        "PDAC": 25
+      }
+    },
+    {
+      "combination": "figitumumab\" + binimetinib",
+      "agents": [
+        "figitumumab\"",
+        "binimetinib"
+      ],
+      "quartets": 26,
+      "by_cancer": {
+        "CRC": 1,
+        "PDAC": 25
+      }
+    },
+    {
+      "combination": "encorafenib + binimetinib",
+      "agents": [
+        "encorafenib",
+        "binimetinib"
+      ],
+      "quartets": 23,
+      "by_cancer": {
+        "CM": 23
+      }
+    },
+    {
+      "combination": "BKM120 + encorafenib",
+      "agents": [
+        "BKM120",
+        "encorafenib"
+      ],
+      "quartets": 21,
+      "by_cancer": {
+        "CM": 21
+      }
+    },
+    {
+      "combination": "LEE011 + encorafenib",
+      "agents": [
+        "LEE011",
+        "encorafenib"
+      ],
+      "quartets": 20,
+      "by_cancer": {
+        "CM": 20
+      }
+    },
+    {
+      "combination": "BYL719 + LGH447",
+      "agents": [
+        "BYL719",
+        "LGH447"
+      ],
+      "quartets": 17,
+      "by_cancer": {
+        "NSCLC": 17
+      }
+    },
+    {
+      "combination": "INC280 + trastuzumab",
+      "agents": [
+        "INC280",
+        "trastuzumab"
+      ],
+      "quartets": 14,
+      "by_cancer": {
+        "GC": 14
+      }
+    },
+    {
+      "combination": "LEE011 + binimetinib",
+      "agents": [
+        "LEE011",
+        "binimetinib"
+      ],
+      "quartets": 12,
+      "by_cancer": {
+        "CM": 12
+      }
+    },
+    {
+      "combination": "BKM120 + LDE225",
+      "agents": [
+        "BKM120",
+        "LDE225"
+      ],
+      "quartets": 0,
+      "by_cancer": {}
+    }
+  ],
+  "units": {
+    "day": "days",
+    "volume_mm3": "mm^3"
+  }
+}
