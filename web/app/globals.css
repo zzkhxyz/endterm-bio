@@ -24,6 +24,12 @@
 @media(max-width:620px){.hero{min-height:calc(100vh - 62px)}}
 .evidence-card.emphasis>span,.evidence-card.emphasis p{color:#4e6077}
 
+.diagnostic-row .chart-card:first-child{display:flex;flex-direction:column}
+.diagnostic-row .sensitivity-bars{flex:1;min-height:300px;justify-content:space-between;gap:12px;margin:24px 0 16px}
+.diagnostic-row .sensitivity-row{grid-template-columns:105px minmax(0,1fr) 42px;gap:12px;min-height:20px;font-size:12px}
+.diagnostic-row .bar-track{height:16px}
+.diagnostic-row .chart-footnote{margin-top:auto}
+
 .research-path{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--border);box-shadow:0 7px 20px rgba(20,35,55,.04)}
 .research-path-inner{width:min(1180px,calc(100% - 64px));margin:auto;display:flex;overflow-x:auto;scrollbar-width:none}
 .research-path-inner::-webkit-scrollbar{display:none}
