@@ -29,6 +29,8 @@
 .diagnostic-row .sensitivity-row{grid-template-columns:105px minmax(0,1fr) 42px;gap:12px;min-height:20px;font-size:12px}
 .diagnostic-row .bar-track{height:16px}
 .diagnostic-row .chart-footnote{margin-top:auto}
+.hero-author{display:flex;align-items:center;flex-wrap:wrap;gap:7px 9px;width:max-content;max-width:100%;border-left:2px solid #e4a642;padding-left:13px;margin:24px 0 0;color:#e7edf5;font-size:14px;letter-spacing:.01em}
+.hero-author span:first-child{color:#aeb9c7}.hero-author strong{font-weight:700}
 
 .research-path{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--border);box-shadow:0 7px 20px rgba(20,35,55,.04)}
 .research-path-inner{width:min(1180px,calc(100% - 64px));margin:auto;display:flex;overflow-x:auto;scrollbar-width:none}
