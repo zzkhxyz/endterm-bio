@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import "@fontsource-variable/manrope/wght.css";
 import "katex/dist/katex.min.css";
 import "./globals.css";
 
