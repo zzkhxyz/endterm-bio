@@ -39,7 +39,7 @@ The [seven-page report](report/report.pdf) covers Parts A–F, equations, parame
 
 ## Stage 4: interactive site
 
-The [Next.js App Router site](web/) exports to static HTML and uses the same [results JSON](web/public/data/results.json) as the report. It has a PDX selector, treatment-group chart, measured-versus-fitted comparison, residuals, a browser RK4 simulator, profile likelihood, local sensitivity, and a full parameter-correlation heatmap. The hero is statically rendered; data-heavy charts load when the reader scrolls or follows a section link. This keeps the initial page fast while preserving all interactive analysis. It supports light and dark themes and mobile layouts. The seven-page PDF is copied to `web/public/report.pdf` by `make web-data`.
+The [Next.js App Router site](web/) exports to static HTML and uses the same [results JSON](web/public/data/results.json) as the report. It has a research-path navigator, an interactive mechanism map that highlights ODE terms and compares one-at-a-time model scenarios, a shared PDX selector, treatment-group chart, measured-versus-fitted comparison, residuals, a browser RK4 simulator, profile likelihood, local sensitivity, and a full parameter-correlation heatmap. The hero is statically rendered; data-heavy charts load when the reader scrolls or follows a section link. This keeps the initial page fast while preserving all interactive analysis. It supports light and dark themes and mobile layouts. The seven-page PDF is copied to `web/public/report.pdf` by `make web-data`.
 
 Vercel project `zzkhxyz/endterm-bio` is connected to this GitHub repository with Root Directory `web` and the Next.js framework preset. The production branch is `main`; Git integration supplies preview builds for pull requests.
 

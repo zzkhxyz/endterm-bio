@@ -2,17 +2,12 @@
 
 import { useMemo, useState } from "react";
 import { line, scaleLinear, interpolateRdBu } from "d3";
-import katex from "katex";
+import ModelExplorer from "./model-explorer";
 import { Arm, Point, ResultData, simulate } from "../lib/model";
 
 const arms: Arm[] = ["control", "A", "B", "A+B"];
 const armNames: Record<Arm, string> = { control: "Untreated", A: "BYL719", B: "LJM716", "A+B": "Combination" };
 const format = (n: number, digits = 2) => Number(n).toFixed(digits);
-
-function MathText({ value, block = false }: { value: string; block?: boolean }) {
-  const html = useMemo(() => katex.renderToString(value, { displayMode: block, throwOnError: false, output: "html" }), [value, block]);
-  return <span className={block ? "math-block" : "math-inline"} dangerouslySetInnerHTML={{ __html: html }} />;
-}
 
 function SectionHeading({ label, title, children }: { label: string; title: string; children: React.ReactNode }) {
   return <div className="section-heading"><span className="eyebrow">{label}</span><h2>{title}</h2><p>{children}</p></div>;
@@ -172,7 +167,15 @@ export default function Dashboard({ results }: { results: ResultData }) {
 
       <section className="section section-soft" id="data"><div className="content"><SectionHeading label="The observed data" title="Forty growth curves. Four treatment arms.">The original Gao et al. screening workbook provides measured tumor volumes over time. I selected a complete, consistently filtered BRCA cohort before fitting the model.</SectionHeading><div className="metric-strip"><div><strong>{lines.length}</strong><span>PDX lines</span></div><div><strong>{lines.length * arms.length}</strong><span>mouse trajectories</span></div><div><strong>{metrics.n_observations}</strong><span>volume measurements</span></div><div><strong>mm³</strong><span>tumor volume</span></div></div><div className="chart-card"><div className="card-top"><div><span className="eyebrow">Explore a line</span><h3>Measured tumor growth</h3></div><label className="select-wrap">PDX line<select value={lineId} onChange={(event) => setLineId(event.target.value)}>{lines.map((id) => <option key={id} value={id}>{id}</option>)}</select></label></div><Legend colors={results.treatment_colors} active={active} onToggle={toggleArm} /><TumorChart points={selectedPoints} colors={results.treatment_colors} active={active} showPredicted={false} /><p className="chart-footnote">Each point is a measured mouse tumor volume. Select a line or tap a treatment to isolate it.</p></div><SimpleNote>The colored dots are real measurements. A single line may respond differently from another, which is why the model allows line-specific growth.</SimpleNote></div></section>
 
-      <section className="section" id="model"><div className="content"><SectionHeading label="The mechanism" title="A small model of growth, treatment, and resistance.">I divide each tumor into sensitive and relatively resistant volume. Both grow, treatment removes volume, and a small fraction transfers from sensitive to resistant.</SectionHeading><div className="model-layout"><div className="equation-card"><span className="eyebrow">The ODE</span><MathText block value={String.raw`\frac{dS}{dt}=\left[r_i\left(1-\frac{S+R}{K_i}\right)-\kappa E_t-\mu\right]S`} /><MathText block value={String.raw`\frac{dR}{dt}=\left[r_i\left(1-\frac{S+R}{K_i}\right)-\eta\kappa E_t\right]R+\mu S`} /><div className="equation-key"><div><b>S</b> sensitive tumor</div><div><b>R</b> relatively resistant tumor</div><div><b>V = S + R</b> observed volume</div></div></div><div className="mechanism-card"><div className="cell-flow"><span>S</span><div><b>μ</b><i>→</i><small>transition</small></div><span>R</span></div><div className="mechanism-divider" /><p><strong>Growth</strong> slows as the tumor approaches its line-specific capacity.</p><p><strong>Drug pressure</strong> kills sensitive volume more strongly than resistant volume.</p><p><strong>Constant exposure</strong> stands in for a PK curve that was not measured.</p></div></div><div className="bliss-card"><div><span className="eyebrow">The comparison</span><h3>What would two independent drugs do?</h3><p>Bliss gives an expected joint effect from the two single-agent effects. The extra term, ψ, measures departure from that expectation.</p></div><MathText block value={String.raw`E_{A+B}=e_{A,c}+e_B-e_{A,c}e_B+\psi e_{A,c}e_B`} /></div><SimpleNote>When ψ is zero, the combination follows independent action. Positive ψ means more model kill than that baseline; negative ψ means less.</SimpleNote></div></section>
+      <section className="section" id="model">
+        <div className="content">
+          <SectionHeading label="The mechanism" title="A small model of growth, treatment, and resistance.">
+            I divide each tumor into sensitive (S) and relatively resistant (R) volume. Select a model component to see its equation term and a one-at-a-time comparison for the chosen PDX line.
+          </SectionHeading>
+          <ModelExplorer results={results} lineId={lineId} lines={lines} onLineChange={setLineId} />
+          <SimpleNote>When ψ is zero, the combination follows Bliss independent action at the assumed dose. The chart changes one model setting at a time; it does not replace a full refit or measured data.</SimpleNote>
+        </div>
+      </section>
 
       <section className="section section-dark" id="simulator"><div className="content"><SectionHeading label="Try the model" title="Move ψ. Watch the four curves.">The browser solves the same two-population equations with RK4. Adjust either drug effect or the interaction and see how the projected volumes separate.</SectionHeading><Simulator results={results} lineId={lineId} /><SimpleNote>A slider changes a model assumption, not a measured outcome. The simulation starts from the selected PDX line’s actual baseline.</SimpleNote></div></section>
 
