@@ -14,18 +14,18 @@
 \maketitle
 \vspace{-1em}
 \begin{abstract}
-We test whether BYL719 (PI3K$\alpha$ inhibitor) and LJM716 (anti-HER3 antibody) interact beyond Bliss independent action in ten breast-cancer patient-derived xenografts (PDXs). Forty single-mouse trajectories provide 838 tumor-volume measurements. A joint two-population logistic ODE fit estimates a positive interaction ($\hat\psi=26.73$), and a conditional likelihood-ratio test favors it over $\psi=0$ ($p=2.42\times10^{-6}$). However, the 200-replicate bootstrap interval reaches both fit bounds $[-1,50]$, model residuals are structured, and an equal-dose refit gives $\hat\psi=1.81$ ($p=0.63$). We therefore report \emph{dose-sensitive apparent synergy}, not a robust biological claim.
+I test whether BYL719 (PI3K$\alpha$ inhibitor) and LJM716 (anti-HER3 antibody) interact beyond Bliss independent action in ten breast-cancer patient-derived xenografts (PDXs). Forty single-mouse trajectories provide 838 tumor-volume measurements. A joint two-population logistic ODE fit estimates a positive interaction ($\hat\psi=26.73$), and a conditional likelihood-ratio test favors it over $\psi=0$ ($p=2.42\times10^{-6}$). However, the 200-replicate bootstrap interval reaches both fit bounds $[-1,50]$, model residuals are structured, and an equal-dose refit gives $\hat\psi=1.81$ ($p=0.63$). I therefore report \emph{dose-sensitive apparent synergy}, not a robust biological claim.
 \end{abstract}
 
 \section*{Introduction}
-PDX tumors retain some characteristics of the source patient tumor, making them useful preclinical systems, but a single mouse per line and treatment leaves response variability unmeasured. Combination therapy may outperform monotherapies through independent action alone. We use the Bliss null to make the excess effect explicit in a dynamical model, then test how much of that conclusion survives uncertainty and dose assumptions. All results, fitting code, and the processed data are in the companion repository.
+PDX tumors retain some characteristics of the source patient tumor, making them useful preclinical systems, but a single mouse per line and treatment leaves response variability unmeasured. Combination therapy may outperform monotherapies through independent action alone. I use the Bliss null to make the excess effect explicit in a dynamical model, then test how much of that conclusion survives uncertainty and dose assumptions. All results, fitting code, and the processed data are in the companion repository.
 
 \section*{Part A — Data and experiment}
-The source is the original supplementary PCT (tumor-volume time-course) workbook of Gao et al.\ \cite{gao}; it is downloaded by \texttt{analysis/src/pdxmodel/data.py} and verified by SHA-256. The workbook contains 67,445 raw PCT rows. Requiring at least six measurements, a day-zero volume, positive nonmissing volumes, and unique days gives the largest full four-arm set for BYL719 + LJM716: 52 complete PDX quartets (29 BRCA, 23 gastric). We select one cancer, BRCA, then deterministically rank lines by their least-covered arm and follow-up length. Ten lines yield 40 trajectories and 838 measurements. Every line has control, A, B, and A+B, one mouse per arm. Time is in days and volume in mm$^3$; each arm starts from its own measured baseline.
+The source is the original supplementary PCT (tumor-volume time-course) workbook of Gao et al.\ \cite{gao}; it is downloaded by \texttt{analysis/src/pdxmodel/data.py} and verified by SHA-256. The workbook contains 67,445 raw PCT rows. Requiring at least six measurements, a day-zero volume, positive nonmissing volumes, and unique days gives the largest full four-arm set for BYL719 + LJM716: 52 complete PDX quartets (29 BRCA, 23 gastric). I select one cancer, BRCA, then deterministically rank lines by their least-covered arm and follow-up length. Ten lines yield 40 trajectories and 838 measurements. Every line has control, A, B, and A+B, one mouse per arm. Time is in days and volume in mm$^3$; each arm starts from its own measured baseline.
 
-BYL719 inhibits PI3K$\alpha$ signaling; LJM716 binds HER3 and stabilizes its inactive conformation \cite{garrett,garner}. A later dose compilation of the Gao experiments reports BYL719 at 50 mg/kg daily alone and 30 mg/kg daily in the combination, while LJM716 is 25 mg/kg every other day in both arms \cite{baaz}. Dose is absent from the PCT workbook. We assume mean BYL719 exposure scales with the reported dose ratio $30/50=0.6$, and test ratio 1 as a counterfactual. No concentration measurements permit a PK fit.
+BYL719 inhibits PI3K$\alpha$ signaling; LJM716 binds HER3 and stabilizes its inactive conformation \cite{garrett,garner}. A later dose compilation of the Gao experiments reports BYL719 at 50 mg/kg daily alone and 30 mg/kg daily in the combination, while LJM716 is 25 mg/kg every other day in both arms \cite{baaz}. Dose is absent from the PCT workbook. I assume mean BYL719 exposure scales with the reported dose ratio $30/50=0.6$, and test ratio 1 as a counterfactual. No concentration measurements permit a PK fit.
 
-Caliper-derived xenograft volumes have multiplicative measurement error; Euhus et al. reported an approximately 15\% \emph{mean interobserver absolute difference} \cite{euhus}. We use $\sigma_{\log V}=0.15$ as a pragmatic weight, not as an observed coefficient of variation or a biological replicate estimate. The fitted residual spread is much larger.
+Caliper-derived xenograft volumes have multiplicative measurement error; Euhus et al. reported an approximately 15\% \emph{mean interobserver absolute difference} \cite{euhus}. I use $\sigma_{\log V}=0.15$ as a pragmatic weight, not as an observed coefficient of variation or a biological replicate estimate. The fitted residual spread is much larger.
 
 \clearpage
 \section*{Part B — Mechanistic model}
@@ -37,12 +37,12 @@ g_i(V)&=r_i(1-V/K_i),\\
 \end{align}
 $S$ and $R$ are sensitive and relatively resistant volumes (mm$^3$). $r_i$ (day$^{-1}$) is low-density growth and $K_i$ (mm$^3$) is carrying capacity. Drug-mediated loss is $\kappa E_t$ (day$^{-1}$), transfer to relative resistance is $\mu S$ (mm$^3$/day), and $\eta$ is the residual drug-kill fraction of $R$. The resistant population retains the same intrinsic growth law: a fixed simplification, not an inferred lack of fitness cost. Initial fractions are $S(0)=0.98V_0$, $R(0)=0.02V_0$.
 
-At constant effective exposure, $e_j=C_j/(EC_{50,j}+C_j)$ is a dimensionless Emax occupancy. We absorb the unknown concentration-to-$EC_{50}$ ratio into the fitted mono-arm effects $e_A,e_B$. With $q_A=e_A/(1-e_A)$, the BYL719 combination-dose effect is $e_{A,c}=0.6q_A/(1+0.6q_A)$. The four arm effects are
+At constant effective exposure, $e_j=C_j/(EC_{50,j}+C_j)$ is a dimensionless Emax occupancy. I absorb the unknown concentration-to-$EC_{50}$ ratio into the fitted mono-arm effects $e_A,e_B$. With $q_A=e_A/(1-e_A)$, the BYL719 combination-dose effect is $e_{A,c}=0.6q_A/(1+0.6q_A)$. The four arm effects are
 \begin{equation}
 E_{\rm control}=0,\quad E_A=e_A,\quad E_B=e_B,\quad
 E_{A+B}=e_{A,c}+e_B-e_{A,c}e_B+\psi e_{A,c}e_B.
 \end{equation}
-The first three combination terms are Bliss independent action at matched effective doses. $\psi>0$ indicates excess model kill, $\psi=0$ Bliss, and $\psi<0$ reduced kill. It is a model interaction parameter, not a molecular interaction constant. We ignore PK fluctuations, immune effects in immunodeficient hosts, tumor spatial structure, and heterogeneous cell states beyond $S,R$.
+The first three combination terms are Bliss independent action at matched effective doses. $\psi>0$ indicates excess model kill, $\psi=0$ Bliss, and $\psi<0$ reduced kill. It is a model interaction parameter, not a molecular interaction constant. I exclude PK fluctuations, immune effects in immunodeficient hosts, tumor spatial structure, and heterogeneous cell states beyond $S,R$.
 
 \section*{Part C — Parameters and hierarchy}
 \small
@@ -60,11 +60,11 @@ $R(0)/V_0$ & Initial resistant fraction & 1 & Fixed 0.02; no measured resistance
 $\sigma_{\log V}$ & Working observation-error scale & 1 & Fixed 0.15; caliper-derived proxy \cite{euhus}\\
 \bottomrule\end{tabular}\end{center}
 \normalsize
-We share drug effects across lines to borrow information but allow each line its own growth and capacity; a single mouse in each arm cannot support line-specific drug-response and resistance parameters. Logistic beats Gompertz on control-only AICc ($-102.30$ vs $-67.89$), with the same two line-specific growth parameters per alternative.
+I share drug effects across lines to borrow information but allow each line its own growth and capacity; a single mouse in each arm cannot support line-specific drug-response and resistance parameters. Logistic beats Gompertz on control-only AICc ($-102.30$ vs $-67.89$), with the same two line-specific growth parameters per alternative.
 
 \clearpage
 \section*{Part D — Estimation and model fit}
-We minimize the weighted log-volume sum of squares
+I minimize the weighted log-volume sum of squares
 \begin{equation}
 Q(\theta)=\sum_{i,t,k}\left[\frac{\log V_{it}^{\rm model}(d_k;\theta)-\log V_{it}^{\rm obs}(d_k)}{0.15}\right]^2.
 \end{equation}
@@ -86,7 +86,7 @@ $\psi$ & 26.73 & [$-3.33$, 56.79] & [$-1$, 50] & [10.62, 50]$^*$\\
 \bottomrule\end{tabular}\end{center}
 \vspace{-3pt}\noindent\footnotesize $^*$The profile upper endpoint reaches the fitted bound, so it is open rather than a finite upper confidence limit. The Jacobian interval extends beyond the bounds because it is a local linear approximation.\normalsize
 
-The Jacobian covariance uses a residual-variance-scaled pseudoinverse of $J^TJ$. Our bootstrap resamples entire trajectory residual patterns by random sign flips, preserves measured baselines, and refits 200 times (200 completed). It retains serial patterns within a mouse, though with only one mouse per arm it cannot estimate between-mouse biological variation. The bootstrap interval touching both fit bounds and the local covariance interval crossing zero temper the small conditional LRT $p$-value. At least eight of ten $K_i$ values sit at fit bounds; this is a clear practical-identifiability warning.
+The Jacobian covariance uses a residual-variance-scaled pseudoinverse of $J^TJ$. My bootstrap resamples entire trajectory residual patterns by random sign flips, preserves measured baselines, and refits 200 times (200 completed). It retains serial patterns within a mouse, though with only one mouse per arm it cannot estimate between-mouse biological variation. The bootstrap interval touching both fit bounds and the local covariance interval crossing zero temper the small conditional LRT $p$-value. At least eight of ten $K_i$ values sit at fit bounds; this is a clear practical-identifiability warning.
 
 \clearpage
 \section*{Part E — Identifiability and sensitivity}
